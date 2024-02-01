@@ -1,0 +1,7 @@
+/composer.lock
+/config.php
+/.idea/*
+/vendor/*
+/cache/*
+/bot.madeline
+/session.madeline
