@@ -106,7 +106,7 @@ class BasicEventHandler extends SimpleEventHandler
                 peer:  $message->senderId,
                 message: 'Привет! Вот инструкция по использованию бота.',
                 reply_markup: $keyboard,);
-            $this->getCustomLogger()->info("Стартовое сообщение отправлено пользователю: {$message->senderId}");
+            $this->getCustomLogger()->info("Сообщение инструкция отправлено пользователю: {$message->senderId}");
         } catch (\Exception $e) {
             $this->getCustomLogger()->error("Ошибка при отправке стартового сообщения: " . $e->getMessage());
         }
