@@ -74,12 +74,37 @@ class BasicEventHandler extends SimpleEventHandler
                 'inline_keyboard' => [
                     [
                         ['text' => 'Посетить GitHub', 'url' => 'https://github.com'],
+                    ],
+                    [
+                        ['text' => 'Посетить Telegram', 'url' => 'https://t.me'],
                     ]
                 ]
             ];
             $this->messages->sendMessage(
                 peer:  $message->senderId,
                 message: 'Привет! Бот активен.',
+                reply_markup: $keyboard,);
+            $this->getCustomLogger()->info("Стартовое сообщение отправлено пользователю: {$message->senderId}");
+        } catch (\Exception $e) {
+            $this->getCustomLogger()->error("Ошибка при отправке стартового сообщения: " . $e->getMessage());
+        }
+    }
+
+    // Обработчик команды /help
+    #[FilterCommand('help')]
+    public function helpCommand(Message $message): void
+    {
+        try {
+            $keyboard = [
+                'inline_keyboard' => [
+                    [
+                        ['text' => 'Посетить GitHub репозиторий', 'url' => 'https://github.com/OldBorrow1488/tg-bot'],
+                    ],
+                ]
+            ];
+            $this->messages->sendMessage(
+                peer:  $message->senderId,
+                message: 'Привет! Вот инструкция по использованию бота.',
                 reply_markup: $keyboard,);
             $this->getCustomLogger()->info("Стартовое сообщение отправлено пользователю: {$message->senderId}");
         } catch (\Exception $e) {
