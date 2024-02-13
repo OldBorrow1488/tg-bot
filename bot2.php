@@ -138,28 +138,55 @@ class BasicEventHandler extends SimpleEventHandler
         $messageID = $update['msg_id'];
         $this->getCustomLogger()->info("Получены данные: " . $callbackData);
         switch ($callbackData) {
+            case 'go_back':
+                $this->sendMenu($chatID, $messageID);
+                break;
             case 'about':
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' =>'Назад', 'callback_data' => 'go_back'],
+                        ],
+                    ]
+                ];
                 $this->messages->editMessage(
                     no_webpage: true,
                     peer: $chatID,
                     id: $messageID,
                     message: 'Информация о боте: [Описание бота]',
+                    reply_markup: $keyboard,
                 );
                 break;
             case 'help':
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' =>'Назад', 'callback_data' => 'go_back'],
+                        ],
+                    ]
+                ];
                 $this->messages->editMessage(
                     no_webpage: true,
                     peer: $chatID,
                     id: $messageID,
                     message:  'Как использовать бота: [Инструкция]',
+                    reply_markup: $keyboard,
                 );
                 break;
             case 'links':
+                $keyboard = [
+                    'inline_keyboard' => [
+                        [
+                            ['text' =>'Назад', 'callback_data' => 'go_back'],
+                        ],
+                    ]
+                ];
                 $this->messages->editMessage(
                     no_webpage: true,
                     peer: $chatID,
                     id: $messageID,
                     message: 'Полезные ссылки: [Ссылки]',
+                    reply_markup: $keyboard,
                 );
                 break;
             default:
@@ -170,22 +197,11 @@ class BasicEventHandler extends SimpleEventHandler
                 );
                 break;
         }
-
-        // Отправка подтверждения обработки колбэк-запроса
-        try {
-            $this->messages->getBotCallbackAnswer(
-                game: false,
-                peer: $chatID,
-                msg_id: $messageID,
-                data: $callbackData,
-            );
-        } catch (\Exception $e) {
-            $this->getCustomLogger()->error("Ошибка при отправке ответа на колбэк-запрос: " . $e->getMessage());
-        }
+        $this->getCustomLogger()->info("Ответ на колбэк-запрос отправлен пользователю: {$chatID}");
     }
 
     // Метод для отправки меню с инлайн-кнопками
-    public function sendMenu($chatID) {
+    public function sendMenu($chatID, $messageID =null) {
         $keyboard = [
             'inline_keyboard' => [
                 [['text' => 'О боте', 'callback_data' => 'about']],
@@ -194,11 +210,22 @@ class BasicEventHandler extends SimpleEventHandler
             ],
         ];
 
-        $this->messages->sendMessage(
-            peer: $chatID,
-            message:  'Выберите опцию из меню:',
-            reply_markup: $keyboard,
-        );
+        if ($messageID !== null) {
+            // Редактируем существующее сообщение
+            $this->messages->editMessage(
+                peer:  $chatID,
+                id:  $messageID,
+                message: 'Выберите опцию из меню:',
+                reply_markup:  $keyboard,
+            );
+        } else {
+            // Отправляем новое сообщение, если ID сообщения не предоставлен
+            $this->messages->sendMessage(
+                peer:  $chatID,
+                message: 'Выберите опцию из меню:',
+                reply_markup:  $keyboard,
+            );
+        }
     }
 
 
